@@ -3,6 +3,8 @@ import React, { PropsWithChildren } from 'react'
 import styles from '@styles/Layout.module.css'
 import Header from '@components/Header'
 import Footer from '@components/Footer'
+import Showcase from '@components/Showcase'
+import { useRouter } from 'next/router'
 
 interface ILayout {
 	title?: string
@@ -16,6 +18,7 @@ const Layout: React.FC<PropsWithChildren<ILayout>> = ({
 	children,
 	description
 }: PropsWithChildren<ILayout>) => {
+	const { pathname } = useRouter()
 	return (
 		<div className={styles.layout}>
 			<Head>
@@ -24,6 +27,7 @@ const Layout: React.FC<PropsWithChildren<ILayout>> = ({
 				<meta name="keywords" content={keywords} />
 			</Head>
 			<Header />
+			{pathname === '/' && <Showcase />}
 			<main className="container">{children}</main>
 			<Footer />
 		</div>
