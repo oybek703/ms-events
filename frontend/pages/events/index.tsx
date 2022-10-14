@@ -2,9 +2,10 @@ import Layout from '@components/Layout'
 import { GetStaticProps } from 'next'
 import { IEvent } from '@interfaces/event.interface'
 import axios from 'axios'
-import { API_URL } from '@config/index'
+import { API_URL } from '@helpers/api'
 import React, { PropsWithChildren } from 'react'
 import EventItem from '@components/EventItem'
+import { getEvents } from '@helpers/index'
 
 const Events: React.FC<PropsWithChildren<IEventsProps>> = ({ events }) => {
 	return (
@@ -16,10 +17,21 @@ const Events: React.FC<PropsWithChildren<IEventsProps>> = ({ events }) => {
 }
 
 export const getStaticProps: GetStaticProps<IEventsProps> = async () => {
-	const { data } = await axios.get(`${API_URL}/api/events`)
+	const { data } = await axios.get(`${API_URL}/api/events`, {
+		params: {
+			pagination: {
+				start: 0,
+				limit: 10
+			},
+			populate: {
+				image: '*'
+			}
+		}
+	})
+	const events = getEvents(data)
 	return {
 		props: {
-			events: data.events
+			events: events ?? []
 		}
 	}
 }

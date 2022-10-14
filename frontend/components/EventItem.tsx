@@ -12,12 +12,12 @@ const EventItem: React.FC<{ event: IEvent }> = ({ event }) => {
 			</div>
 			<div className={styles.info}>
 				<span>
-					{event.date} at {event.time}
+					<>{event.date}</> at {event.time}
 				</span>
 				<h3>{event.name}</h3>
 			</div>
 			<div className={styles.link}>
-				<Link href={`/events/${event.slug}`}>
+				<Link href={`/events/${event.id}`}>
 					<a className="btn btn-outline-success">Details</a>
 				</Link>
 			</div>

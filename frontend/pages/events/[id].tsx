@@ -3,11 +3,12 @@ import { IEvent } from '@interfaces/event.interface'
 import React from 'react'
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next'
 import axios from 'axios'
-import { API_URL } from '@config/index'
+import { API_URL } from '@helpers/api'
 import styles from '@styles/Event.module.css'
 import Link from 'next/link'
 import { FaPenAlt, FaTimes } from 'react-icons/fa'
 import Image from 'next/image'
+import { getEvents } from '@helpers/index'
 
 const Event: React.FC<IEventItemProps> = ({ event }) => {
 	function handleDelete() {
@@ -27,7 +28,7 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 					</a>
 				</div>
 				<span>
-					{event.date} at {event.time}
+					<>{event.date}</> at {event.time}
 				</span>
 				<h1>{event.name}</h1>
 				{event.image && (
@@ -50,8 +51,9 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const { data } = await axios.get(`${API_URL}/api/events`)
-	const paths = data.events.map((event: IEvent) => ({ params: { slug: event.slug } }))
+	const { data } = await axios.get(`${API_URL}/api/events?populate=%2A`)
+	const events = getEvents(data)
+	const paths = events.map((event: IEvent) => ({ params: { id: event.id } }))
 	return {
 		paths,
 		fallback: true
@@ -59,12 +61,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps<IEventItemProps> = async ({ params }: GetStaticPropsContext) => {
-	if (!params) return { notFound: true }
-	const { data } = await axios.get(`${API_URL}/api/events/${params.slug}`)
-	if (JSON.stringify(data) === '{}') return { notFound: true }
-	return {
-		props: {
-			event: data.events
+	console.log(params)
+	try {
+		if (!params) return { notFound: true }
+		const { data } = await axios.get(`${API_URL}/api/events/${params.id}`)
+		if (JSON.stringify(data) === '{}') return { notFound: true }
+		console.log(data)
+		return {
+			props: {
+				event: data.events ?? []
+			}
+		}
+	} catch (e) {
+		return {
+			notFound: true
 		}
 	}
 }
