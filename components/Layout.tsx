@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import React, { PropsWithChildren } from 'react'
-import Header from './Header'
-import Footer from './Footer'
-import styles from '../styles/Layout.module.css'
+import styles from '@styles/Layout.module.css'
+import Header from '@components/Header'
+import Footer from '@components/Footer'
 
 interface ILayout {
 	title?: string
