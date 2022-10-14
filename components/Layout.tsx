@@ -28,7 +28,7 @@ const Layout: React.FC<PropsWithChildren<ILayout>> = ({
 			</Head>
 			<Header />
 			{pathname === '/' && <Showcase />}
-			<main className="container">{children}</main>
+			<main className="container my-3">{children}</main>
 			<Footer />
 		</div>
 	)
