@@ -6,7 +6,7 @@
 
 # dependencies
 frontend/node_modules
-frontend//.pnp
+frontend/.pnp
 frontend/.pnp.js
 
 # testing
@@ -58,7 +58,6 @@ backend/._*
 ############################
 
 backend/*~
-
 
 ############################
 # Windows
@@ -153,4 +152,5 @@ backend/license.txt
 backend/exports
 backend/*.cache
 backend/build
+backend/dist
 backend/.strapi-updater.json
