@@ -11,7 +11,7 @@ const Events: React.FC<PropsWithChildren<IEventsProps>> = ({ events }) => {
 	return (
 		<Layout title="My Events">
 			<h1 className="my-3 fw-bold">Events</h1>
-			{events.length === 0 ? <h3>No events</h3> : events.map((event) => <EventItem key={event.id} event={event} />)}
+			{events.length === 0 ? <h3>No events</h3> : events.map(event => <EventItem key={event.id} event={event} />)}
 		</Layout>
 	)
 }

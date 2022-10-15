@@ -19,6 +19,7 @@
     "@typescript-eslint/no-empty-interface": ["error", {
       "allowSingleExtends": true
     }],
+    "arrow-parens": ["error", "as-needed"],
     "quotes": ["error", "single"],
     "prettier/prettier": [
       "error",
@@ -29,7 +30,8 @@
         "semi": false,
         "bracketSpacing": true,
         "printWidth": 120,
-        "endOfLine": "auto"
+        "endOfLine": "auto",
+        "arrowParens": "avoid"
       }
     ]
   }
