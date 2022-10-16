@@ -9,9 +9,14 @@ const Header = () => {
 					<a className="navbar-brand text-white text-uppercase">MS Events</a>
 				</Link>
 				<Search />
-				<Link href={'/events'}>
-					<a className=" navbar-brand text-white">All Events</a>
-				</Link>
+				<div className="d-flex justify-content-between">
+					<Link href={'/events/add'}>
+						<a className="btn btn-sm btn-outline-light mx-2">Add Event</a>
+					</Link>
+					<Link href={'/events'}>
+						<a className="btn btn-sm btn-outline-light">All Events</a>
+					</Link>
+				</div>
 			</div>
 		</nav>
 	)
