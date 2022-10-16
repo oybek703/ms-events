@@ -1,3 +1,4 @@
+import Search from '@components/Search'
 import Link from 'next/link'
 
 const Header = () => {
@@ -7,8 +8,9 @@ const Header = () => {
 				<Link href={'/'}>
 					<a className="navbar-brand text-white text-uppercase">MS Events</a>
 				</Link>
+				<Search />
 				<Link href={'/events'}>
-					<a className=" navbar-brand text-white">Events</a>
+					<a className=" navbar-brand text-white">All Events</a>
 				</Link>
 			</div>
 		</nav>

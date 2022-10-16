@@ -9,11 +9,10 @@ import Link from 'next/link'
 import { getEvents } from '@helpers/index'
 
 const Home: React.FC<IHomeProps> = ({ events }) => {
-	console.log(API_URL)
 	return (
 		<Layout>
 			<h1 className="fw-bold my-3">Upcoming events</h1>
-			{events.length === 0 ? <h3>No events</h3> : events.map((event) => <EventItem key={event.id} event={event} />)}
+			{events.length === 0 ? <h3>No events</h3> : events.map(event => <EventItem key={event.id} event={event} />)}
 			{events.length > 0 && (
 				<Link href={'/events'}>
 					<a className="btn btn-outline-secondary mb-2">All events</a>
