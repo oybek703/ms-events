@@ -5,6 +5,8 @@ import styles from '@styles/Add.module.css'
 import { toast } from 'react-toastify'
 import axios, { AxiosError } from 'axios'
 import { API_URL } from '@helpers/api'
+import { IApiEvent } from '@interfaces/event.interface'
+import { useRouter } from 'next/router'
 
 interface IFormValues {
 	name: string
@@ -16,6 +18,7 @@ interface IFormValues {
 }
 
 const Add = () => {
+	const { push } = useRouter()
 	const [formValues, setFormValues] = useState<IFormValues>({
 		name: '',
 		address: '',
@@ -49,7 +52,8 @@ const Add = () => {
 						}
 					}
 				)
-				console.log(data)
+				const { data: responseData }: { data: IApiEvent } = data
+				await push(`/events/${responseData.attributes.slug}`)
 			}
 		} catch (e: unknown) {
 			if (e instanceof Error) {
@@ -69,7 +73,9 @@ const Add = () => {
 			<form className={styles.form} onSubmit={handleSubmit}>
 				<div className={styles.grid}>
 					<div>
-						<label htmlFor="name">Event name</label>
+						<label className="form-label" htmlFor="name">
+							Event name
+						</label>
 						<input
 							className="form-control"
 							value={formValues.name}
@@ -81,7 +87,9 @@ const Add = () => {
 						/>
 					</div>
 					<div>
-						<label htmlFor="performers">Event performers</label>
+						<label className="form-label" htmlFor="performers">
+							Event performers
+						</label>
 						<input
 							className="form-control"
 							value={formValues.performers}
@@ -93,7 +101,9 @@ const Add = () => {
 						/>
 					</div>
 					<div>
-						<label htmlFor="performers">Event venue</label>
+						<label className="form-label" htmlFor="performers">
+							Event venue
+						</label>
 						<input
 							className="form-control"
 							value={formValues.venue}
@@ -105,7 +115,9 @@ const Add = () => {
 						/>
 					</div>
 					<div>
-						<label htmlFor="performers">Event address</label>
+						<label className="form-label" htmlFor="performers">
+							Event address
+						</label>
 						<input
 							className="form-control"
 							value={formValues.address}
@@ -117,7 +129,9 @@ const Add = () => {
 						/>
 					</div>
 					<div>
-						<label htmlFor="performers">Event date</label>
+						<label className="form-label" htmlFor="performers">
+							Event date
+						</label>
 						<input
 							className="form-control"
 							value={formValues.date}
@@ -129,7 +143,9 @@ const Add = () => {
 						/>
 					</div>
 					<div>
-						<label htmlFor="performers">Event time</label>
+						<label className="form-label" htmlFor="performers">
+							Event time
+						</label>
 						<input
 							className="form-control"
 							value={formValues.time}

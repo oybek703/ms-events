@@ -120,7 +120,7 @@ export interface Data {
 }
 
 export interface Image {
-	data: Data
+	data?: Data
 }
 
 export interface Attributes {

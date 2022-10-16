@@ -7,12 +7,14 @@ export default function Search() {
 
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		await push(`/events/search?term=${term}`)
-		setTerm('')
+		if (term) {
+			await push(`/events/search?term=${term}`)
+			setTerm('')
+		}
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit} className="my-3 my-md-1">
 			<input
 				value={term}
 				placeholder="Search..."

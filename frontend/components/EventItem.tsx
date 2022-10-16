@@ -17,7 +17,7 @@ const EventItem: React.FC<{ event: IEvent }> = ({ event }) => {
 				<h3>{event.name}</h3>
 			</div>
 			<div className={styles.link}>
-				<Link href={`/events/${event.id}`}>
+				<Link href={`/events/${event.slug}`}>
 					<a className="btn btn-outline-success">Details</a>
 				</Link>
 			</div>

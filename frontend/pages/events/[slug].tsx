@@ -2,13 +2,14 @@ import Layout from '@components/Layout'
 import { IEvent } from '@interfaces/event.interface'
 import React from 'react'
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { API_URL } from '@helpers/api'
 import styles from '@styles/Event.module.css'
 import Link from 'next/link'
 import { FaPenAlt, FaTimes } from 'react-icons/fa'
 import Image from 'next/image'
 import { getEvent, getEvents } from '@helpers/index'
+import { stringify } from 'qs'
 
 const Event: React.FC<IEventItemProps> = ({ event }) => {
 	function handleDelete() {
@@ -20,11 +21,11 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 				<div className={styles.event}>
 					<div className={styles.controls}>
 						<Link href={`/events/edit/${event.slug}`}>
-							<a>
+							<a className="btn btn-sm btn-outline-secondary mx-3">
 								<FaPenAlt /> Edit Event
 							</a>
 						</Link>
-						<a className={styles.delete} href="#" onClick={handleDelete}>
+						<a className="btn btn-sm btn-outline-danger" href="#" onClick={handleDelete}>
 							<FaTimes /> Delete Event
 						</a>
 					</div>
@@ -57,7 +58,7 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
 	const { data } = await axios.get(`${API_URL}/api/events?populate=%2A`)
 	const events = getEvents(data)
-	const paths = events.map((event: IEvent) => ({ params: { id: String(event.id) } }))
+	const paths = events.map((event: IEvent) => ({ params: { slug: event.slug } }))
 	return {
 		paths,
 		fallback: true
@@ -65,10 +66,19 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps<IEventItemProps> = async ({ params }: GetStaticPropsContext) => {
+	console.log(params)
 	try {
 		if (!params) return { notFound: true }
-		const { data } = await axios.get(`${API_URL}/api/events/${params.id}?populate=%2A`)
-		if (JSON.stringify(data) === '{}') return { notFound: true }
+		const queryParams = stringify({
+			filters: {
+				slug: {
+					$eq: params.slug
+				}
+			},
+			populate: 'image'
+		})
+		const { data } = await axios.get(`${API_URL}/api/events?${queryParams}`)
+		if (data.length === 0) return { notFound: true }
 		const event = getEvent(data)
 		return {
 			props: {
