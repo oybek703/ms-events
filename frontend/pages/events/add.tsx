@@ -19,6 +19,7 @@ interface IFormValues {
 
 const Add = () => {
 	const { push } = useRouter()
+	const [loading, setLoading] = useState<boolean>(false)
 	const [formValues, setFormValues] = useState<IFormValues>({
 		name: '',
 		address: '',
@@ -43,6 +44,7 @@ const Add = () => {
 					theme: 'colored'
 				})
 			} else {
+				setLoading(true)
 				const { data } = await axios.post(
 					`${API_URL}/api/events`,
 					{ data: formValues },
@@ -53,6 +55,7 @@ const Add = () => {
 					}
 				)
 				const { data: responseData }: { data: IApiEvent } = data
+				setLoading(false)
 				await push(`/events/${responseData.attributes.slug}`)
 			}
 		} catch (e: unknown) {
@@ -60,6 +63,7 @@ const Add = () => {
 				console.log(e.message)
 				toast.error(e.message)
 			}
+			setLoading(false)
 			console.log(e)
 		}
 	}
@@ -157,7 +161,7 @@ const Add = () => {
 						/>
 					</div>
 				</div>
-				<input type="submit" value="Add event" className="btn btn-outline-secondary" />
+				<input type="submit" value="Add event" className={`btn btn-outline-secondary ${loading && 'disabled'}`} />
 			</form>
 		</Layout>
 	)

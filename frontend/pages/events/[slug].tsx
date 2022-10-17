@@ -1,6 +1,6 @@
 import Layout from '@components/Layout'
 import { IEvent } from '@interfaces/event.interface'
-import React from 'react'
+import React, { useState } from 'react'
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next'
 import axios from 'axios'
 import { API_URL } from '@helpers/api'
@@ -10,11 +10,28 @@ import { FaPenAlt, FaTimes } from 'react-icons/fa'
 import Image from 'next/image'
 import { getEvent, getEvents } from '@helpers/index'
 import { stringify } from 'qs'
+import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
 
 const Event: React.FC<IEventItemProps> = ({ event }) => {
-	function handleDelete() {
-		console.log('delete')
+	const { push } = useRouter()
+	const [loading, setLoading] = useState<boolean>(false)
+	async function handleDelete(eventId: string) {
+		try {
+			setLoading(true)
+			await axios.delete(`${API_URL}/api/events/${eventId}`)
+			setLoading(false)
+			await push('/events')
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.log(e.message)
+				toast.error(e.message)
+			}
+			setLoading(false)
+			console.log(e)
+		}
 	}
+
 	return (
 		<Layout>
 			{event ? (
@@ -25,7 +42,11 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 								<FaPenAlt /> Edit Event
 							</a>
 						</Link>
-						<a className="btn btn-sm btn-outline-danger" href="#" onClick={handleDelete}>
+						<a
+							className={`btn btn-sm btn-outline-danger ${loading && 'disabled'}`}
+							href="#"
+							onClick={() => handleDelete(event.id)}
+						>
 							<FaTimes /> Delete Event
 						</a>
 					</div>
