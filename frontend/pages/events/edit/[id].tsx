@@ -5,19 +5,25 @@ import styles from '@styles/Add.module.css'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import { API_URL } from '@helpers/api'
-import { IApiEvent, IFormValues } from '@interfaces/event.interface'
+import { IApiEvent, IEvent, IFormValues } from '@interfaces/event.interface'
 import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
+import { getEvent } from '@helpers/index'
+import { format } from 'date-fns'
+import Image from 'next/image'
+import { FaImage } from 'react-icons/fa'
 
-const Add = () => {
+const Edit: React.FC<IEditProps> = ({ event }) => {
 	const { push } = useRouter()
 	const [loading, setLoading] = useState<boolean>(false)
+	const [imagePreview, setImagePreview] = useState<string | null>(event.image ?? null)
 	const [formValues, setFormValues] = useState<IFormValues>({
-		name: '',
-		address: '',
-		date: '',
-		time: '',
-		performers: '',
-		venue: ''
+		name: event.name,
+		address: event.address,
+		date: format(new Date(event.date), 'yyyy-MM-dd'),
+		time: event.time,
+		performers: event.performers,
+		venue: event.venue
 	})
 
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -27,8 +33,8 @@ const Add = () => {
 		})
 	}
 
-	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault()
+	async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
+		formEvent.preventDefault()
 		try {
 			if (Object.values(formValues).some(value => value === '')) {
 				return toast.error('Please fill all fields!', {
@@ -36,8 +42,8 @@ const Add = () => {
 				})
 			} else {
 				setLoading(true)
-				const { data } = await axios.post(
-					`${API_URL}/api/events`,
+				const { data } = await axios.put(
+					`${API_URL}/api/events/${event.id}`,
 					{ data: formValues },
 					{
 						headers: {
@@ -60,11 +66,11 @@ const Add = () => {
 	}
 
 	return (
-		<Layout title="Add new event">
+		<Layout title="Edit event">
 			<Link href={'/events'}>
 				<a>{'< '} Back to Events </a>
 			</Link>
-			<h1 className="text-center">Add new event</h1>
+			<h1 className="text-center">Edit event</h1>
 			<form className={styles.form} onSubmit={handleSubmit}>
 				<div className={styles.grid}>
 					<div>
@@ -152,10 +158,43 @@ const Add = () => {
 						/>
 					</div>
 				</div>
-				<input type="submit" value="Add event" className={`btn btn-outline-secondary ${loading && 'disabled'}`} />
+				<input type="submit" value="Update event" className={`btn btn-outline-secondary ${loading && 'disabled'}`} />
 			</form>
+			<h2>Event image</h2>
+			{imagePreview ? (
+				<Image className="rounded" src={imagePreview} width={170} height={100} alt={event.slug} />
+			) : (
+				<div>No image</div>
+			)}
+			<div>
+				<button className="btn btn-outline-secondary">
+					<FaImage /> Set Image
+				</button>
+			</div>
 		</Layout>
 	)
 }
 
-export default Add
+export const getServerSideProps: GetServerSideProps<IEditProps> = async ({ params }) => {
+	if (!params) return { notFound: true }
+	try {
+		const { data } = await axios.get(`${API_URL}/api/events/${params.id}?populate=image`)
+		const event = getEvent(data)
+		return {
+			props: {
+				event
+			}
+		}
+	} catch (e: unknown) {
+		if (e instanceof Error) {
+			console.log(e.message)
+		}
+		return { notFound: true }
+	}
+}
+
+interface IEditProps {
+	event: IEvent
+}
+
+export default Edit

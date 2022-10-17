@@ -142,3 +142,12 @@ export interface IApiEvent {
 	id: string
 	attributes: Attributes
 }
+
+export interface IFormValues {
+	name: string
+	performers: string
+	venue: string
+	address: string
+	date: string
+	time: string
+}

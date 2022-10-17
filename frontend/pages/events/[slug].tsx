@@ -37,7 +37,7 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 			{event ? (
 				<div className={styles.event}>
 					<div className={styles.controls}>
-						<Link href={`/events/edit/${event.slug}`}>
+						<Link href={`/events/edit/${event.id}`}>
 							<a className="btn btn-sm btn-outline-secondary mx-3">
 								<FaPenAlt /> Edit Event
 							</a>
@@ -66,7 +66,7 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 					<h3>Venue: {event.venue}</h3>
 					<p>{event.address}</p>
 					<Link href="/events">
-						<a className={`${styles.back}`}>{'<'} Go Back</a>
+						<a className={`${styles.back}`}>{'<'} Back to Events</a>
 					</Link>
 				</div>
 			) : (
