@@ -12,6 +12,8 @@ import { getEvent } from '@helpers/index'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { FaImage } from 'react-icons/fa'
+import Modal from '@components/Modal'
+import ImageUpload from '@components/ImageUpload'
 
 const Edit: React.FC<IEditProps> = ({ event }) => {
 	const { push } = useRouter()
@@ -25,7 +27,7 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 		performers: event.performers,
 		venue: event.venue
 	})
-
+	const [modal, setModal] = useState<boolean>(false)
 	function handleChange(event: ChangeEvent<HTMLInputElement>) {
 		setFormValues({
 			...formValues,
@@ -61,6 +63,21 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 				toast.error(e.message)
 			}
 			setLoading(false)
+			console.log(e)
+		}
+	}
+
+	async function onImageUpload() {
+		try {
+			const { data } = await axios.get(`${API_URL}/api/events/${event.id}?populate=image`)
+			const updatedEvent = getEvent(data)
+			setImagePreview(updatedEvent.image)
+			setModal(false)
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.log(e.message)
+				toast.error(e.message)
+			}
 			console.log(e)
 		}
 	}
@@ -167,10 +184,13 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 				<div>No image</div>
 			)}
 			<div>
-				<button className="btn btn-outline-secondary">
+				<button onClick={() => setModal(true)} className="btn btn-outline-secondary">
 					<FaImage /> Set Image
 				</button>
 			</div>
+			<Modal show={modal} onClose={() => setModal(false)}>
+				<ImageUpload eventId={event.id} onImageUpload={onImageUpload} />
+			</Modal>
 		</Layout>
 	)
 }
