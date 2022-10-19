@@ -3,7 +3,7 @@ module.exports = {
     {
       method: 'GET',
       path: '/events/my',
-      handler: 'my.index',
+      handler: 'event.my',
       config: {}
     }
   ]
