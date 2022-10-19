@@ -12,6 +12,7 @@ import { getEvent, getEvents } from '@helpers/index'
 import { stringify } from 'qs'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
+import { Routes } from '@components/Header'
 
 const Event: React.FC<IEventItemProps> = ({ event }) => {
 	const { push } = useRouter()
@@ -65,7 +66,7 @@ const Event: React.FC<IEventItemProps> = ({ event }) => {
 					<p>{event.description}</p>
 					<h3>Venue: {event.venue}</h3>
 					<p>{event.address}</p>
-					<Link href="/events">
+					<Link href={Routes.allEvents}>
 						<a className={`${styles.back}`}>{'<'} Back to Events</a>
 					</Link>
 				</div>

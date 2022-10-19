@@ -14,6 +14,7 @@ import Image from 'next/image'
 import { FaImage } from 'react-icons/fa'
 import Modal from '@components/Modal'
 import ImageUpload from '@components/ImageUpload'
+import { Routes } from '@components/Header'
 
 const Edit: React.FC<IEditProps> = ({ event }) => {
 	const { push } = useRouter()
@@ -84,7 +85,7 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 
 	return (
 		<Layout title="Edit event">
-			<Link href={'/events'}>
+			<Link href={Routes.allEvents}>
 				<a>{'< '} Back to Events </a>
 			</Link>
 			<h1 className="text-center">Edit event</h1>

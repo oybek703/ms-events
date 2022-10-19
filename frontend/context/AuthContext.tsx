@@ -2,17 +2,24 @@ import React, { createContext, Dispatch, PropsWithChildren, SetStateAction, useE
 import axios from 'axios'
 import { NEXT_URL } from '@helpers/api'
 import { useRouter } from 'next/router'
+import { Routes } from '@components/Header'
 
-interface IUserLogin {
+interface IUser {
 	email: string
 	password: string
+}
+
+interface IUserLogin extends IUser {}
+
+interface IUserRegister extends IUser {
+	username: string
 }
 
 interface IAppContext {
 	user: unknown
 	error: string | null
 	login: (user: IUserLogin) => Promise<void>
-	register: (user: unknown) => void
+	register: (user: IUserRegister) => Promise<void>
 	logout: () => Promise<void>
 	checkUserLoggedIn: () => Promise<void>
 	setError: Dispatch<SetStateAction<string | null>>
@@ -23,7 +30,7 @@ export const AuthContext = createContext<IAppContext>({
 	error: '',
 	logout: async () => undefined,
 	login: async () => undefined,
-	register: () => undefined,
+	register: async () => undefined,
 	checkUserLoggedIn: async () => undefined,
 	setError: () => undefined
 })
@@ -32,6 +39,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 	const [user, setUser] = useState<unknown>(null)
 	const [error, setError] = useState<string | null>(null)
 	const { push } = useRouter()
+
 	// Login
 	async function login(userData: IUserLogin) {
 		try {
@@ -39,6 +47,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 			const { data } = await axios.post(`${NEXT_URL}/api/login`, { identifier, password })
 			const { user } = data
 			setUser(user)
+			await push(Routes.dashboard)
 		} catch (e: unknown) {
 			if (e instanceof axios.AxiosError) {
 				setError(e.response?.data.message)
@@ -48,8 +57,19 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 	}
 
 	// Register
-	function register(user: unknown) {
-		console.log(user)
+	async function register(userData: IUserRegister) {
+		try {
+			const { username, email, password } = userData
+			const { data } = await axios.post(`${NEXT_URL}/api/register`, { username, email, password })
+			const { user } = data
+			setUser(user)
+			await push(Routes.dashboard)
+		} catch (e: unknown) {
+			if (e instanceof axios.AxiosError) {
+				setError(e.response?.data.message)
+			}
+			console.log(e)
+		}
 	}
 
 	// Logout

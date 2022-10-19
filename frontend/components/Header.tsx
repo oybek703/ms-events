@@ -10,7 +10,8 @@ export enum Routes {
 	addEvent = '/events/add',
 	login = '/accounts/login',
 	logout = '/accounts/logout',
-	register = '/accounts/register'
+	register = '/accounts/register',
+	dashboard = '/accounts/dashboard'
 }
 
 const Header = () => {

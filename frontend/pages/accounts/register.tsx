@@ -3,19 +3,36 @@ import styles from '@styles/AuthForm.module.css'
 import { FaUserAlt } from 'react-icons/fa'
 import Link from 'next/link'
 import { Routes } from '@components/Header'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { AuthContext } from '@context/AuthContext'
 
 const Register = () => {
 	const [username, setUsername] = useState<string>('')
 	const [email, setEmail] = useState<string>('')
 	const [password, setPassword] = useState<string>('')
 	const [confirmPassword, setConfirmPassword] = useState<string>('')
+	const [loading, setLoading] = useState<boolean>(false)
+	const { register, error, setError } = useContext(AuthContext)
 
-	function handleSubmit(event: FormEvent) {
+	useEffect(
+		function () {
+			if (error) {
+				toast.error(error)
+				setLoading(false)
+			}
+			return () => setError('')
+		},
+		[setError, error]
+	)
+
+	async function handleSubmit(event: FormEvent) {
 		event.preventDefault()
 		if (password !== confirmPassword) return toast.error('Password do not match!')
-		console.log({ username, email, password })
+		if (!password || !confirmPassword || !email || !username) return toast.error('Please fill all fields!')
+		setLoading(true)
+		await register({ username, email, password })
+		setLoading(false)
 	}
 
 	return (
@@ -74,7 +91,7 @@ const Register = () => {
 						id="confirmPassword"
 					/>
 				</div>
-				<button type="submit" className="btn btn-outline-secondary w-100">
+				<button disabled={loading} type="submit" className="btn btn-outline-secondary w-100">
 					Register
 				</button>
 				<div className="mt-3">
