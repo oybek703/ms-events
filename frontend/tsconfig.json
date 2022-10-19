@@ -6,7 +6,8 @@
       "@styles/*": ["styles/*"],
       "@config/*": ["config/*"],
       "@interfaces/*": ["interfaces/*"],
-      "@helpers/*": ["helpers/*"]
+      "@helpers/*": ["helpers/*"],
+      "@context/*": ["context/*"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

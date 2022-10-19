@@ -1,14 +1,22 @@
 import Search from '@components/Search'
+import { FaSignInAlt, FaUserAlt } from 'react-icons/fa'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useContext } from 'react'
+import { AuthContext } from '@context/AuthContext'
 
-enum Routes {
+export enum Routes {
 	allEvents = '/events',
-	addEvent = '/events/add'
+	addEvent = '/events/add',
+	login = '/accounts/login',
+	logout = '/accounts/logout',
+	register = '/accounts/register'
 }
 
 const Header = () => {
 	const { pathname } = useRouter()
+	const { user, register, login, logout } = useContext(AuthContext)
+	console.log(register)
 	return (
 		<nav className="navbar bg-secondary">
 			<div className="container-fluid d-grid px-5 d-flex align-items-center">
@@ -16,12 +24,40 @@ const Header = () => {
 					<a className="fw-bold fst-italic text-uppercase btn btn-sm btn-outline-light">Music Events</a>
 				</Link>
 				<Search />
-				<div className="d-flex justify-content-between">
-					<Link href={'/events/add'}>
-						<a className={`btn btn-sm btn-${pathname === Routes.addEvent ? '' : 'outline-'}light`}>Add Event</a>
-					</Link>
-					<Link href={'/events'}>
-						<a className={`btn btn-sm btn-${pathname === Routes.allEvents ? '' : 'outline-'}light mx-2`}>All Events</a>
+				<div className="d-flex justify-content-between gap-1">
+					{user ? (
+						<>
+							<Link href={Routes.addEvent}>
+								<a className={`btn btn-sm btn-${pathname === Routes.addEvent ? '' : 'outline-'}light`}>Add Event</a>
+							</Link>
+							<Link href={Routes.logout}>
+								<a onClick={logout} className={`btn btn-sm btn-${pathname === Routes.logout ? '' : 'outline-'}light`}>
+									<FaSignInAlt /> Logout
+								</a>
+							</Link>
+						</>
+					) : (
+						<>
+							<Link href={Routes.login}>
+								<a
+									onClick={() => login()}
+									className={`btn btn-sm btn-${pathname === Routes.login ? '' : 'outline-'}light`}
+								>
+									Login
+								</a>
+							</Link>
+							<Link href={Routes.register}>
+								<a
+									onClick={register}
+									className={`btn btn-sm btn-${pathname === Routes.register ? '' : 'outline-'}light`}
+								>
+									Register
+								</a>
+							</Link>
+						</>
+					)}
+					<Link href={Routes.allEvents}>
+						<a className={`btn btn-sm btn-${pathname === Routes.allEvents ? '' : 'outline-'}light`}>All Events</a>
 					</Link>
 				</div>
 			</div>
