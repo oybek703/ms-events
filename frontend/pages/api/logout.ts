@@ -1,0 +1,30 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
+import axios from 'axios'
+import { serialize } from 'cookie'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	if (req.method === 'POST') {
+		try {
+			res.setHeader(
+				'Set-Cookie',
+				serialize('token', '', {
+					path: '/',
+					httpOnly: true,
+					expires: new Date(0)
+				})
+			)
+			res.status(200).json({ message: 'Success!' })
+		} catch (e: unknown) {
+			let errorMessage = 'Internal server error!'
+			if (e instanceof axios.AxiosError) {
+				console.log(e.response?.data)
+				errorMessage = e.response?.data.error.message
+			}
+			console.log(errorMessage)
+			res.status(500).json({ message: errorMessage })
+		}
+	} else {
+		res.setHeader('Allow', ['POST'])
+		res.status(400).json({ message: ` Method ${req.method} is not allowed!` })
+	}
+}

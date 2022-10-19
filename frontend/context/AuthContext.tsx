@@ -1,6 +1,7 @@
-import React, { createContext, Dispatch, PropsWithChildren, SetStateAction, useState } from 'react'
+import React, { createContext, Dispatch, PropsWithChildren, SetStateAction, useEffect, useState } from 'react'
 import axios from 'axios'
 import { NEXT_URL } from '@helpers/api'
+import { useRouter } from 'next/router'
 
 interface IUserLogin {
 	email: string
@@ -12,25 +13,25 @@ interface IAppContext {
 	error: string | null
 	login: (user: IUserLogin) => Promise<void>
 	register: (user: unknown) => void
-	logout: () => void
-	checkUserLoggedIn: () => void
+	logout: () => Promise<void>
+	checkUserLoggedIn: () => Promise<void>
 	setError: Dispatch<SetStateAction<string | null>>
 }
 
 export const AuthContext = createContext<IAppContext>({
 	user: null,
 	error: '',
-	logout: () => undefined,
+	logout: async () => undefined,
 	login: async () => undefined,
 	register: () => undefined,
-	checkUserLoggedIn: () => undefined,
+	checkUserLoggedIn: async () => undefined,
 	setError: () => undefined
 })
 
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 	const [user, setUser] = useState<unknown>(null)
 	const [error, setError] = useState<string | null>(null)
-
+	const { push } = useRouter()
 	// Login
 	async function login(userData: IUserLogin) {
 		try {
@@ -52,14 +53,34 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
 	}
 
 	// Logout
-	function logout() {
-		console.log('logout')
+	async function logout() {
+		try {
+			await axios.post(`${NEXT_URL}/api/logout`)
+			setUser(null)
+			await push('/')
+		} catch (e) {
+			if (e instanceof axios.AxiosError) {
+				console.log(e.message)
+				setError(e.message)
+			}
+		}
 	}
 
 	// Check user logged in
-	function checkUserLoggedIn() {
-		console.log('check')
+	async function checkUserLoggedIn() {
+		try {
+			const { data } = await axios.get(`${NEXT_URL}/api/user`)
+			setUser(data)
+		} catch (e: unknown) {
+			if (e instanceof axios.AxiosError) {
+				console.log(e.message)
+			}
+		}
 	}
+
+	useEffect(function () {
+		;(async () => await checkUserLoggedIn())()
+	}, [])
 
 	return (
 		<AuthContext.Provider value={{ user, error, login, logout, register, checkUserLoggedIn, setError }}>

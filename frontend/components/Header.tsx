@@ -24,16 +24,17 @@ const Header = () => {
 				</Link>
 				<Search />
 				<div className="d-flex justify-content-between gap-1">
+					<Link href={Routes.allEvents}>
+						<a className={`btn btn-sm btn-${pathname === Routes.allEvents ? '' : 'outline-'}light`}>All Events</a>
+					</Link>
 					{user ? (
 						<>
 							<Link href={Routes.addEvent}>
 								<a className={`btn btn-sm btn-${pathname === Routes.addEvent ? '' : 'outline-'}light`}>Add Event</a>
 							</Link>
-							<Link href={Routes.logout}>
-								<a onClick={logout} className={`btn btn-sm btn-${pathname === Routes.logout ? '' : 'outline-'}light`}>
-									<FaSignInAlt /> Logout
-								</a>
-							</Link>
+							<button onClick={logout} className="btn btn-sm btn-outline-danger text-white border-white">
+								<FaSignInAlt /> Logout
+							</button>
 						</>
 					) : (
 						<>
@@ -45,9 +46,6 @@ const Header = () => {
 							</Link>
 						</>
 					)}
-					<Link href={Routes.allEvents}>
-						<a className={`btn btn-sm btn-${pathname === Routes.allEvents ? '' : 'outline-'}light`}>All Events</a>
-					</Link>
 				</div>
 			</div>
 		</nav>
