@@ -87,7 +87,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps<IEventItemProps> = async ({ params }: GetStaticPropsContext) => {
-	console.log(params)
 	try {
 		if (!params) return { notFound: true }
 		const queryParams = stringify({

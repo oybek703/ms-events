@@ -195,7 +195,7 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 	)
 }
 
-export const getServerSideProps: GetServerSideProps<IEditProps> = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps<IEditProps> = async ({ params, req }) => {
 	if (!params) return { notFound: true }
 	try {
 		const { data } = await axios.get(`${API_URL}/api/events/${params.id}?populate=image`)

@@ -1,5 +1,5 @@
 import Search from '@components/Search'
-import { FaSignInAlt, FaUserAlt } from 'react-icons/fa'
+import { FaSignInAlt } from 'react-icons/fa'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useContext } from 'react'
@@ -15,8 +15,7 @@ export enum Routes {
 
 const Header = () => {
 	const { pathname } = useRouter()
-	const { user, register, login, logout } = useContext(AuthContext)
-	console.log(register)
+	const { user, logout } = useContext(AuthContext)
 	return (
 		<nav className="navbar bg-secondary">
 			<div className="container-fluid d-grid px-5 d-flex align-items-center">
@@ -39,20 +38,10 @@ const Header = () => {
 					) : (
 						<>
 							<Link href={Routes.login}>
-								<a
-									onClick={() => login()}
-									className={`btn btn-sm btn-${pathname === Routes.login ? '' : 'outline-'}light`}
-								>
-									Login
-								</a>
+								<a className={`btn btn-sm btn-${pathname === Routes.login ? '' : 'outline-'}light`}>Login</a>
 							</Link>
 							<Link href={Routes.register}>
-								<a
-									onClick={register}
-									className={`btn btn-sm btn-${pathname === Routes.register ? '' : 'outline-'}light`}
-								>
-									Register
-								</a>
+								<a className={`btn btn-sm btn-${pathname === Routes.register ? '' : 'outline-'}light`}>Register</a>
 							</Link>
 						</>
 					)}

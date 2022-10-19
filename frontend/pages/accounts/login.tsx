@@ -3,15 +3,33 @@ import styles from '@styles/AuthForm.module.css'
 import { FaUserAlt } from 'react-icons/fa'
 import Link from 'next/link'
 import { Routes } from '@components/Header'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useContext, useEffect, useState } from 'react'
+import { AuthContext } from '@context/AuthContext'
+import { toast } from 'react-toastify'
 
 const Login = () => {
 	const [email, setEmail] = useState<string>('')
 	const [password, setPassword] = useState<string>('')
+	const [loading, setLoading] = useState<boolean>(false)
 
-	function handleSubmit(event: FormEvent) {
+	const { login, error, setError } = useContext(AuthContext)
+
+	useEffect(
+		function () {
+			if (error) {
+				toast.error(error)
+				setLoading(false)
+			}
+			return () => setError('')
+		},
+		[setError, error]
+	)
+	async function handleSubmit(event: FormEvent) {
 		event.preventDefault()
-		console.log({ email, password })
+		if (!password || !email) return toast.error('Please fill email and password!')
+		setLoading(true)
+		await login({ email, password })
+		setLoading(true)
 	}
 
 	return (
@@ -45,7 +63,7 @@ const Login = () => {
 						id="password"
 					/>
 				</div>
-				<button type="submit" className="btn btn-outline-secondary w-100">
+				<button disabled={loading} type="submit" className="btn btn-outline-secondary w-100">
 					Login
 				</button>
 				<div className="mt-3">
