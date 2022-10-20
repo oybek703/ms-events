@@ -1,56 +1,21 @@
 import Layout from '@components/Layout'
 import { IEvent } from '@interfaces/event.interface'
-import React, { useState } from 'react'
+import React from 'react'
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next'
 import axios from 'axios'
 import { API_URL } from '@helpers/api'
 import styles from '@styles/Event.module.css'
 import Link from 'next/link'
-import { FaPenAlt, FaTimes } from 'react-icons/fa'
 import Image from 'next/image'
 import { getEvent, getEvents } from '@helpers/index'
 import { stringify } from 'qs'
-import { useRouter } from 'next/router'
-import { toast } from 'react-toastify'
 import { Routes } from '@components/Header'
 
 const Event: React.FC<IEventItemProps> = ({ event }) => {
-	const { push } = useRouter()
-	const [loading, setLoading] = useState<boolean>(false)
-	async function handleDelete(eventId: string) {
-		try {
-			setLoading(true)
-			await axios.delete(`${API_URL}/api/events/${eventId}`)
-			setLoading(false)
-			await push('/events')
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.log(e.message)
-				toast.error(e.message)
-			}
-			setLoading(false)
-			console.log(e)
-		}
-	}
-
 	return (
 		<Layout>
 			{event ? (
 				<div className={styles.event}>
-					<div className={styles.controls}>
-						<Link href={`/events/edit/${event.id}`}>
-							<a className="btn btn-sm btn-outline-secondary mx-3">
-								<FaPenAlt /> Edit Event
-							</a>
-						</Link>
-						<a
-							className={`btn btn-sm btn-outline-danger ${loading && 'disabled'}`}
-							href="#"
-							onClick={() => handleDelete(event.id)}
-						>
-							<FaTimes /> Delete Event
-						</a>
-					</div>
 					<span>
 						<>{new Date(event.date).toLocaleDateString()}</> at {event.time}
 					</span>

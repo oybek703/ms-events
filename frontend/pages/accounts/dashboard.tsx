@@ -4,13 +4,35 @@ import { IEvent } from '@interfaces/event.interface'
 import { getEvents, parseCookies } from '@helpers/index'
 import axios from 'axios'
 import { API_URL } from '@helpers/api'
-import React from 'react'
+import React, { useState } from 'react'
 import { FaPenAlt, FaTimes } from 'react-icons/fa'
 import Link from 'next/link'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/router'
 
-export const Dashboard: React.FC<IDashboardProps> = ({ events }) => {
-	function handleDelete(id: string) {
-		console.log(id)
+export const Dashboard: React.FC<IDashboardProps> = ({ events, token }) => {
+	const { push } = useRouter()
+	const [loading, setLoading] = useState<boolean>(false)
+	async function handleDelete(eventId: string) {
+		try {
+			setLoading(true)
+			await axios.delete(`${API_URL}/api/events/${eventId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
+			setLoading(false)
+			await push('/events')
+		} catch (e: unknown) {
+			let errorMessage = 'Something went wrong!'
+			if (e instanceof axios.AxiosError) {
+				if (e.response?.status === 401) errorMessage = 'Unauthorized!'
+				console.log(e.message)
+			}
+			toast.error(errorMessage)
+			setLoading(false)
+			console.log(e)
+		}
 	}
 
 	return (
@@ -22,14 +44,20 @@ export const Dashboard: React.FC<IDashboardProps> = ({ events }) => {
 						key={event.id}
 						className="list-group-item my-2 rounded-0 d-flex justify-content-between list-group-item-secondary"
 					>
-						<h5 className="fw-bold">{event.name}</h5>
+						<h5 className="fw-bold">
+							<Link href={`/events/${event.slug}`}>{event.name}</Link>
+						</h5>
 						<div>
 							<Link href={`/events/edit/${event.id}`}>
 								<a className="btn btn-sm btn-outline-secondary mx-3">
 									<FaPenAlt /> Edit Event
 								</a>
 							</Link>
-							<a className={'btn btn-sm btn-outline-danger'} href="#" onClick={() => handleDelete(event.id)}>
+							<a
+								className={`btn btn-sm btn-outline-danger ${loading && 'disabled'}`}
+								href="#"
+								onClick={() => handleDelete(event.id)}
+							>
 								<FaTimes /> Delete Event
 							</a>
 						</div>
@@ -50,13 +78,15 @@ export const getServerSideProps: GetServerSideProps<IDashboardProps> = async ({ 
 	const events = getEvents(data)
 	return {
 		props: {
-			events
+			events,
+			token
 		}
 	}
 }
 
 interface IDashboardProps {
 	events: IEvent[]
+	token: string
 }
 
 export default Dashboard

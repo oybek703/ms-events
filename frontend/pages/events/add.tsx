@@ -7,8 +7,11 @@ import axios from 'axios'
 import { API_URL } from '@helpers/api'
 import { IApiEvent, IFormValues } from '@interfaces/event.interface'
 import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
+import { parseCookies } from '@helpers/index'
+import { Routes } from '@components/Header'
 
-const Add = () => {
+const Add: React.FC<IAddProps> = ({ token }) => {
 	const { push } = useRouter()
 	const [loading, setLoading] = useState<boolean>(false)
 	const [formValues, setFormValues] = useState<IFormValues>({
@@ -36,18 +39,18 @@ const Add = () => {
 				})
 			} else {
 				setLoading(true)
-				const { data } = await axios.post(
+				await axios.post(
 					`${API_URL}/api/events`,
 					{ data: formValues },
 					{
 						headers: {
-							'Content-Type': 'application/json'
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`
 						}
 					}
 				)
-				const { data: responseData }: { data: IApiEvent } = data
 				setLoading(false)
-				await push(`/events/${responseData.attributes.slug}`)
+				await push(Routes.dashboard)
 			}
 		} catch (e: unknown) {
 			if (e instanceof Error) {
@@ -156,6 +159,29 @@ const Add = () => {
 			</form>
 		</Layout>
 	)
+}
+
+export const getServerSideProps: GetServerSideProps<IAddProps> = async ({ req }) => {
+	const { token } = parseCookies(req)
+	try {
+		return {
+			props: {
+				token
+			}
+		}
+	} catch (e: unknown) {
+		if (e instanceof axios.AxiosError) {
+			console.log(e.message)
+		}
+		console.log(e)
+		return {
+			notFound: true
+		}
+	}
+}
+
+interface IAddProps {
+	token: string
 }
 
 export default Add

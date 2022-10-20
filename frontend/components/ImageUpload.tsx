@@ -8,9 +8,10 @@ import styles from '@styles/ImageUpload.module.css'
 interface IImageUploadProps {
 	eventId: string
 	onImageUpload: () => void
+	token: string
 }
 
-const ImageUpload: React.FC<IImageUploadProps> = ({ onImageUpload, eventId }) => {
+const ImageUpload: React.FC<IImageUploadProps> = ({ onImageUpload, eventId, token }) => {
 	const [uploading, setUploading] = useState<boolean>(false)
 	const [image, setImage] = useState<Blob | MediaSource | null>(null)
 	const [preview, setPreview] = useState<string>('')
@@ -24,14 +25,20 @@ const ImageUpload: React.FC<IImageUploadProps> = ({ onImageUpload, eventId }) =>
 			formData.append('ref', 'api::event.event')
 			formData.append('refId', eventId)
 			formData.append('field', 'image')
-			await axios.post(`${API_URL}/api/upload`, formData)
+			await axios.post(`${API_URL}/api/upload`, formData, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
 			setUploading(false)
 			onImageUpload()
 		} catch (e: unknown) {
-			if (e instanceof Error) {
+			let errorMessage = 'Something went wrong!'
+			if (e instanceof axios.AxiosError) {
 				console.log(e.message)
-				toast.error(e.message)
+				errorMessage = e.response?.data.error.message
 			}
+			toast.error(errorMessage)
 			console.log(e)
 			setUploading(false)
 		}

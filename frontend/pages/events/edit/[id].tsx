@@ -8,7 +8,7 @@ import { API_URL } from '@helpers/api'
 import { IApiEvent, IEvent, IFormValues } from '@interfaces/event.interface'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
-import { getEvent } from '@helpers/index'
+import { getEvent, parseCookies } from '@helpers/index'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { FaImage } from 'react-icons/fa'
@@ -16,7 +16,7 @@ import Modal from '@components/Modal'
 import ImageUpload from '@components/ImageUpload'
 import { Routes } from '@components/Header'
 
-const Edit: React.FC<IEditProps> = ({ event }) => {
+const Edit: React.FC<IEditProps> = ({ event, token }) => {
 	const { push } = useRouter()
 	const [loading, setLoading] = useState<boolean>(false)
 	const [imagePreview, setImagePreview] = useState<string | null>(event.image ?? null)
@@ -40,9 +40,7 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 		formEvent.preventDefault()
 		try {
 			if (Object.values(formValues).some(value => value === '')) {
-				return toast.error('Please fill all fields!', {
-					theme: 'colored'
-				})
+				return toast.error('Please fill all fields!')
 			} else {
 				setLoading(true)
 				const { data } = await axios.put(
@@ -50,7 +48,8 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 					{ data: formValues },
 					{
 						headers: {
-							'Content-Type': 'application/json'
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`
 						}
 					}
 				)
@@ -59,10 +58,12 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 				await push(`/events/${responseData.attributes.slug}`)
 			}
 		} catch (e: unknown) {
-			if (e instanceof Error) {
+			let errorMessage = 'Something went wrong!'
+			if (e instanceof axios.AxiosError) {
 				console.log(e.message)
-				toast.error(e.message)
+				if (e.response?.status === 401) errorMessage = 'Unauthorized!'
 			}
+			toast.error(errorMessage)
 			setLoading(false)
 			console.log(e)
 		}
@@ -190,7 +191,7 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 				</button>
 			</div>
 			<Modal show={modal} onClose={() => setModal(false)}>
-				<ImageUpload eventId={event.id} onImageUpload={onImageUpload} />
+				<ImageUpload token={token} eventId={event.id} onImageUpload={onImageUpload} />
 			</Modal>
 		</Layout>
 	)
@@ -199,15 +200,21 @@ const Edit: React.FC<IEditProps> = ({ event }) => {
 export const getServerSideProps: GetServerSideProps<IEditProps> = async ({ params, req }) => {
 	if (!params) return { notFound: true }
 	try {
-		const { data } = await axios.get(`${API_URL}/api/events/${params.id}?populate=image`)
+		const { token } = parseCookies(req)
+		const { data } = await axios.get(`${API_URL}/api/events/${params.id}?populate=image`, {
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		})
 		const event = getEvent(data)
 		return {
 			props: {
-				event
+				event,
+				token
 			}
 		}
 	} catch (e: unknown) {
-		if (e instanceof Error) {
+		if (e instanceof axios.AxiosError) {
 			console.log(e.message)
 		}
 		return { notFound: true }
@@ -216,6 +223,7 @@ export const getServerSideProps: GetServerSideProps<IEditProps> = async ({ param
 
 interface IEditProps {
 	event: IEvent
+	token: string
 }
 
 export default Edit
