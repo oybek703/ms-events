@@ -1,4 +1,7 @@
 import { IApiEvent, IEvent } from '@interfaces/event.interface'
+import { parse } from 'cookie'
+import { IncomingMessage } from 'http'
+import { NextApiRequestCookies } from 'next/dist/server/api-utils'
 
 function getEventGeneric<T extends IApiEvent, K extends IEvent>(data: T): K {
 	const image = !data.attributes.image.data ? null : data.attributes.image.data?.attributes.url
@@ -25,4 +28,12 @@ export function getEvent(response: { data: IApiEvent }) {
 	let { data } = response
 	if (Array.isArray(data)) data = data[0]
 	return getEventGeneric(data)
+}
+
+type parseRequest = IncomingMessage & {
+	cookies: NextApiRequestCookies
+}
+
+export function parseCookies(req: parseRequest) {
+	return parse(req.headers.cookie ?? '')
 }

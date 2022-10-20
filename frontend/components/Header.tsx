@@ -33,6 +33,9 @@ const Header = () => {
 							<Link href={Routes.addEvent}>
 								<a className={`btn btn-sm btn-${pathname === Routes.addEvent ? '' : 'outline-'}light`}>Add Event</a>
 							</Link>
+							<Link href={Routes.dashboard}>
+								<a className={`btn btn-sm btn-${pathname === Routes.dashboard ? '' : 'outline-'}light`}>Dashboard</a>
+							</Link>
 							<button onClick={logout} className="btn btn-sm btn-outline-danger text-white border-white">
 								<FaSignInAlt /> Logout
 							</button>
