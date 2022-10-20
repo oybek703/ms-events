@@ -69,17 +69,27 @@ export const Dashboard: React.FC<IDashboardProps> = ({ events, token }) => {
 }
 
 export const getServerSideProps: GetServerSideProps<IDashboardProps> = async ({ req }) => {
-	const { token } = parseCookies(req)
-	const { data } = await axios.get(`${API_URL}/api/events/my`, {
-		headers: {
-			Authorization: `Bearer ${token}`
+	try {
+		const { token } = parseCookies(req)
+		const { data } = await axios.get(`${API_URL}/api/events/my`, {
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		})
+		const events = getEvents(data)
+		return {
+			props: {
+				events,
+				token
+			}
 		}
-	})
-	const events = getEvents(data)
-	return {
-		props: {
-			events,
-			token
+	} catch (e: unknown) {
+		if (e instanceof axios.AxiosError) {
+			console.log(e.message)
+			console.log(e.response?.data)
+		}
+		return {
+			notFound: true
 		}
 	}
 }

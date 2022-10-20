@@ -11,6 +11,7 @@ export const EVENT_PER_PAGE = 3
 
 const Pagination: React.FC<IPaginationProps> = ({ page, total }) => {
 	const lastPage = Math.ceil(total / EVENT_PER_PAGE)
+	if (total <= 3) return null
 	return (
 		<nav aria-label="Page navigation example">
 			<ul className="pagination">

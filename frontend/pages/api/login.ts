@@ -21,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		} catch (e: unknown) {
 			let errorMessage = 'Internal server error!'
 			if (e instanceof axios.AxiosError) {
+				console.log(e.message)
 				console.log(e.response?.data)
 				errorMessage = e.response?.data.error.message
 			}
